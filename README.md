@@ -43,3 +43,46 @@ Simplemente escribimos en la línea de comandos: **deactivate**
 
 - **Credenciales del controlador:** los scripts usan el usuario `cisco` y la clave `cisco123!`. Si en tu Network Controller creaste otro usuario, cambialos en `01_get-ticket.py` y en `04_tabulate.py`.
 - **Ticket (X-Auth-Token):** `02_get-network-device.py` y `03_get-host.py` traen escrito un ticket de ejemplo que **no va a funcionar** en tu Packet Tracer, porque el controlador genera uno nuevo en cada sesión y vence. Ejecutá primero `01_get-ticket.py`, copiá el ticket que muestra y reemplazalo en el header `X-Auth-Token` de esos dos scripts. `04_tabulate.py` no necesita este paso: pide el ticket solo.
+
+
+
+---
+
+## Scripts de la API (TP N° 4 – Grupo 09)
+
+Todos usan la API REST del Network Controller de Packet Tracer en `http://localhost:58000/api/v1`.
+Packet Tracer tiene que estar abierto con el `.pkt` cargado y el acceso remoto del controlador habilitado.
+
+| Script | Método y endpoint | Qué hace |
+|---|---|---|
+| `01_get-ticket.py` | POST `/ticket` | Pide el ticket de autenticación y lo muestra. |
+| `02_get-network-device.py` | GET `/network-device` | Lista los equipos de red (hostname, plataforma, IP de gestión). |
+| `03_get-host.py` | GET `/host` | Lista los hosts (nombre, IP, MAC, interfaz). |
+| `04_tabulate.py` | POST `/ticket` + GET `/network-device` y `/host` | Pide el ticket solo y muestra dos tablas ordenadas. |
+| `05_inventario_csv.py` | POST `/ticket` + GET `/network-device` y `/host` | **Script propio.** Genera un inventario completo en un único CSV y muestra un resumen. |
+
+### Script propio: `05_inventario_csv.py`
+
+Exporta a un archivo CSV (`inventario_AAAAMMDD_HHMMSS.csv`) los equipos y hosts que ve el controlador,
+con las columnas: categoría, nombre, tipo, IP, MAC, modelo, serie, versión, estado, conectado a e interfaz.
+Al terminar imprime cuántos equipos hay por estado (`Managed`, `Wrong credential`) y cuántos hosts responden al ping.
+
+Diferencias con los scripts suministrados: pide el ticket solo, valida el código de estado de cada respuesta,
+no tiene la clave escrita en el código (la pide por teclado o la toma de la variable `NC_PASSWORD`)
+y guarda el resultado en un archivo en lugar de solo imprimirlo.
+
+```
+python src\05_inventario_csv.py
+python src\05_inventario_csv.py --user cisco --salida inventario.csv
+python src\05_inventario_csv.py --sep ","
+```
+
+El separador por defecto es `;` porque Excel en español lo espera así.
+
+### Antes de ejecutar
+
+- Instalar las dependencias dentro del entorno virtual: `pip install -r requirements.txt`.
+- Los scripts `01` y `04` traen el usuario `cisco` y la clave `cisco123!`: reemplazarlos por los del controlador propio.
+- Los scripts `02` y `03` traen un ticket de ejemplo que no funciona: ejecutar primero el `01` y pegar el ticket en el header `X-Auth-Token`.
+- El entorno virtual (`cisco/`, `.venv/`) y los archivos `.env` no se suben al repositorio (ver `.gitignore`).
+- 
