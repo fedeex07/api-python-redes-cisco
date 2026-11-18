@@ -85,4 +85,4 @@ El separador por defecto es `;` porque Excel en español lo espera así.
 - Los scripts `01` y `04` traen el usuario `cisco` y la clave `cisco123!`: reemplazarlos por los del controlador propio.
 - Los scripts `02` y `03` traen un ticket de ejemplo que no funciona: ejecutar primero el `01` y pegar el ticket en el header `X-Auth-Token`.
 - El entorno virtual (`cisco/`, `.venv/`) y los archivos `.env` no se suben al repositorio (ver `.gitignore`).
-- 
+- 02 y 04 usan .get() para tolerar equipos sin hostname (Wrong credential, como el ISP).
